@@ -4,9 +4,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.launchActivity
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.platform.app.InstrumentationRegistry
+import com.picpay.desafio.android.RecyclerViewMatchers.checkRecyclerViewItem
+import com.picpay.desafio.android.presenter.activity.MainActivity
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -24,8 +25,6 @@ class MainActivityTest {
     fun shouldDisplayTitle() {
         launchActivity<MainActivity>().apply {
             val expectedTitle = context.getString(R.string.title)
-
-            moveToState(Lifecycle.State.RESUMED)
 
             onView(withText(expectedTitle)).check(matches(isDisplayed()))
         }

@@ -2,7 +2,7 @@ package com.picpay.desafio.android.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.picpay.desafio.android.domain.models.UserEntity
+import com.picpay.desafio.android.data.model.UserEntity
 
 @Database(
     entities = [UserEntity::class],

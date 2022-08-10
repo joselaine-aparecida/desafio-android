@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
-import com.picpay.desafio.android.domain.models.UserEntity
+import com.picpay.desafio.android.data.model.UserEntity
 
 @Dao
 interface UserDao {

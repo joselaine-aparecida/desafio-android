@@ -1,52 +1,28 @@
 package com.picpay.desafio.android.data.repository
 
-import com.picpay.desafio.android.data.api.PicPayApi
-import com.picpay.desafio.android.data.database.UserDao
-import com.picpay.desafio.android.data.mapper.toDomain
-import com.picpay.desafio.android.data.mapper.toEntity
-import com.picpay.desafio.android.domain.models.UserEntity
-import com.picpay.desafio.android.domain.models.User
-import com.picpay.desafio.android.network.exceptions.GetUsersException
-import com.picpay.desafio.android.network.exceptions.GetUsersFromNetwork
+import com.picpay.desafio.android.data.datasources.UserCacheDataSource
+import com.picpay.desafio.android.data.datasources.UserRemoteDataSource
+import com.picpay.desafio.android.domain.model.User
+import com.picpay.desafio.android.domain.repository.UserRepository
+import java.io.IOException
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val service: PicPayApi,
-    private val dao: UserDao
+    private val localDataSource: UserCacheDataSource,
+    private val remoteDataSource: UserRemoteDataSource
 ) : UserRepository {
 
-    override suspend fun getUsers(): List<User> {
+    override suspend fun getUsers(): Result<List<User>> {
         return try {
-            getUsersFromNetwork()
-        } catch (e: GetUsersFromNetwork) {
-            getUserFromDb()
+            val usersRemote = remoteDataSource()
+            Result.success(usersRemote)
         } catch (e: Exception) {
-            throw GetUsersException()
-        }
-    }
-
-    private suspend fun getUsersFromNetwork(): List<User> {
-        return try {
-            service.getUsers().map {
-                saveListOfUsers(listOf(it.toEntity()))
-                it.toDomain()
+            val usersDb = localDataSource()
+            if (usersDb.isEmpty()){
+                Result.failure<Exception>(e)
             }
-        } catch (e: Exception) {
-            throw GetUsersFromNetwork()
+            Result.success(usersDb)
         }
     }
 
-    private fun getUserFromDb(): List<User> {
-        return if (dao.getList().isNotEmpty()){
-            dao.getList().map {
-                it.toDomain()
-            }
-        } else {
-            throw GetUsersException()
-        }
-    }
-
-    private fun saveListOfUsers(newList: List<UserEntity>) {
-        dao.saveList(newList)
-    }
 }

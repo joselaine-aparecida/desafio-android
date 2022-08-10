@@ -18,10 +18,11 @@ class UserRepositoryImpl @Inject constructor(
             Result.success(usersRemote)
         } catch (e: Exception) {
             val usersDb = localDataSource()
-            if (usersDb.isEmpty()){
-                Result.failure<Exception>(e)
+            if (usersDb.isEmpty()) {
+                Result.failure(e)
+            } else {
+                Result.success(usersDb)
             }
-            Result.success(usersDb)
         }
     }
 

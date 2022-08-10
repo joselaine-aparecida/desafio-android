@@ -1,19 +1,21 @@
 package com.picpay.desafio.android.domain.usecases
 
+import com.picpay.desafio.android.domain.repository.UserRepository
 import com.picpay.desafio.android.factory.createListOfUser
-import com.picpay.desafio.android.network.exceptions.GetUsersException
+import com.picpay.desafio.android.data.exceptions.GetUsersException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual
 import org.junit.Before
 import org.junit.Test
 
-
-class GetUserUseCaseTest{
-    private lateinit var userRepository: com.picpay.desafio.android.data.repository.UserRepository
+@ExperimentalCoroutinesApi
+class GetUserUseCaseTest {
+    private lateinit var userRepository: UserRepository
     private lateinit var useCase: GetUserUseCase
 
     @Before
@@ -23,28 +25,26 @@ class GetUserUseCaseTest{
     }
 
     @Test
-    fun givenGetUsers_whenSuccess_shouldReturnSuccessResult(): Unit = runBlocking {
+    fun givenGetUsers_whenSuccess_shouldReturnSuccessResult(): Unit = runTest {
         coEvery {
             userRepository.getUsers()
-        } returns createListOfUser()
+        } returns Result.success(createListOfUser())
 
-        val result = useCase.invoke()
+        val result = useCase()
         val expectedResult = Result.success(createListOfUser())
 
         assertThat(result, IsEqual(expectedResult))
         coVerify(exactly = 1) { userRepository.getUsers() }
     }
 
-    @Test
-    fun givenGetUsers_whenUnsuccessful_shouldReturnFailedResult(): Unit = runBlocking {
+    @Test(expected = GetUsersException::class)
+    fun givenGetUsers_whenUnsuccessful_shouldReturnFailedResult(): Unit = runTest {
         coEvery {
             userRepository.getUsers()
         } throws GetUsersException()
 
-        val result = useCase.invoke()
-        val expectedResult = Result.failure<GetUsersException>(GetUsersException())
+        useCase()
 
-        assertThat(result, IsEqual(expectedResult))
         coVerify(exactly = 1) { userRepository.getUsers() }
     }
 

@@ -1,7 +1,7 @@
 package com.picpay.desafio.android.data.mapper
 
-import com.picpay.desafio.android.domain.models.UserEntity
-import com.picpay.desafio.android.domain.models.User
+import com.picpay.desafio.android.data.model.UserEntity
+import com.picpay.desafio.android.domain.model.User
 import com.picpay.desafio.android.factory.createUserResponse
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual

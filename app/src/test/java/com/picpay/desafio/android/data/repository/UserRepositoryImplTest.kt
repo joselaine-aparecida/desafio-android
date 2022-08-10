@@ -1,63 +1,72 @@
 package com.picpay.desafio.android.data.repository
 
-import com.picpay.desafio.android.data.api.PicPayApi
-import com.picpay.desafio.android.data.database.UserDao
+import com.picpay.desafio.android.data.datasources.UserCacheDataSource
+import com.picpay.desafio.android.data.datasources.UserRemoteDataSource
 import com.picpay.desafio.android.data.mapper.toDomain
-import com.picpay.desafio.android.data.mapper.toEntity
+import com.picpay.desafio.android.domain.repository.UserRepository
+import com.picpay.desafio.android.factory.createListOfUser
 import com.picpay.desafio.android.factory.createListOfUserResponse
-import com.picpay.desafio.android.network.exceptions.GetUsersException
-import com.picpay.desafio.android.network.exceptions.GetUsersFromNetwork
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.IsEqual
 import org.junit.Before
 import org.junit.Test
 
+@ExperimentalCoroutinesApi
 class UserRepositoryImplTest {
-    private lateinit var service: PicPayApi
-    private lateinit var dao: UserDao
+    private lateinit var remoteDataSource: UserRemoteDataSource
+    private lateinit var localDataSource: UserCacheDataSource
     private lateinit var userRepository: UserRepository
 
     @Before
     fun setUp() {
-        service = mockk()
-        dao = mockk()
-        userRepository = UserRepositoryImpl(service, dao)
+        localDataSource = mockk()
+        remoteDataSource = mockk()
+        userRepository = UserRepositoryImpl(localDataSource, remoteDataSource)
     }
 
     @Test
-    fun givenGetUsersFromNetwork_whenSuccess_shouldReturnListOfUser(): Unit = runBlocking {
+    fun givenGetUsers_whenSuccess_shouldReturnListOfUser(): Unit = runTest {
         coEvery {
-            service.getUsers()
-        } returns createListOfUserResponse()
-
-        coEvery {
-            dao.getList()
-        } returns createListOfUserResponse().map {
-            it.toEntity()
-        }
+            remoteDataSource()
+        } returns createListOfUser()
 
         val result = userRepository.getUsers()
-        val expectedResult = createListOfUserResponse().map {
+        val expectedResult = Result.success(
+            createListOfUserResponse().map {
+                it.toDomain()
+            }
+        )
+
+        assertThat(result, IsEqual(expectedResult))
+
+        coVerify(exactly = 1) {  remoteDataSource() }
+    }
+
+    @Test
+    fun givenGetUsers_whenFailureNetwork_shouldCallLocalDataSource(): Unit = runTest {
+        coEvery {
+            remoteDataSource()
+        } throws Exception()
+
+        coEvery {
+            localDataSource()
+        } returns createListOfUserResponse().map {
             it.toDomain()
         }
 
+        val result = userRepository.getUsers()
+        val expectedResult = Result.success(
+            createListOfUserResponse().map {
+                it.toDomain()
+            }
+        )
+
         assertThat(result, IsEqual(expectedResult))
-        coVerify(exactly = 1) { service.getUsers() }
-    }
-
-    @Test(expected = GetUsersException::class)
-    fun givenGetUsers_whenUnsuccessful_shouldThrowGetUsersException(): Unit = runBlocking {
-        coEvery {
-            service.getUsers()
-        } throws GetUsersFromNetwork()
-        coEvery {
-            dao.getList()
-        } throws GetUsersException()
-
-        userRepository.getUsers()
+        coVerify(exactly = 1) { localDataSource() }
     }
 }

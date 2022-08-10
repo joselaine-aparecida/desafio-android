@@ -11,7 +11,6 @@ import com.picpay.desafio.android.presenter.activity.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.hamcrest.Matchers.not
@@ -82,7 +81,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun whenServerReturnError_shouldNotShowRecyclerView(): Unit = runBlocking {
+    fun whenServerReturnError_shouldNotShowRecyclerView()  {
         launchActivity<MainActivity>().apply {
             server.enqueue(MockResponse().setResponseCode(400))
             onView(
@@ -92,5 +91,4 @@ class MainActivityTest {
             )
         }
     }
-
 }

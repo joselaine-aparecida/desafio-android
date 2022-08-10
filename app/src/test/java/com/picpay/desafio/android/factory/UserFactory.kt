@@ -1,8 +1,8 @@
 package com.picpay.desafio.android.factory
 
-import com.picpay.desafio.android.domain.models.UserEntity
-import com.picpay.desafio.android.domain.models.User
-import com.picpay.desafio.android.network.response.UserResponse
+import com.picpay.desafio.android.data.model.UserEntity
+import com.picpay.desafio.android.domain.model.User
+import com.picpay.desafio.android.data.model.UserResponse
 
 fun createListOfUser(): List<User> {
     return listOf(
@@ -19,6 +19,17 @@ fun createListOfUserResponse(): List<UserResponse> {
     return listOf(
         UserResponse(
             id = "1",
+            img = "www.google.com/users",
+            name = "Joselaine Aparecida",
+            username = "joselaine.ap"
+        )
+    )
+}
+
+fun createListOfUserEntity(): List<UserEntity> {
+    return listOf(
+        UserEntity(
+            id = 1,
             img = "www.google.com/users",
             name = "Joselaine Aparecida",
             username = "joselaine.ap"

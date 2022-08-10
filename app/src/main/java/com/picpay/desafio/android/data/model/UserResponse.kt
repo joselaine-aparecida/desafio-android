@@ -1,4 +1,4 @@
-package com.picpay.desafio.android.network.response
+package com.picpay.desafio.android.data.model
 
 data class UserResponse(
     val id: String,

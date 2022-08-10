@@ -3,9 +3,9 @@ package com.picpay.desafio.android.presenter.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.picpay.desafio.android.domain.models.User
+import com.picpay.desafio.android.domain.model.User
 
-class UserListAdapter : ListAdapter<User, UserListItemViewHolder>(diffCalback) {
+class UserListAdapter : ListAdapter<User, UserListItemViewHolder>(diffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserListItemViewHolder {
         return UserListItemViewHolder.create(parent)
     }
@@ -15,7 +15,7 @@ class UserListAdapter : ListAdapter<User, UserListItemViewHolder>(diffCalback) {
     }
 
     companion object {
-        private val diffCalback =
+        private val diffCallback =
             object : DiffUtil.ItemCallback<User>() {
                 override fun areItemsTheSame(
                     oldItem: User,

@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.picpay.desafio.android.R
 import com.picpay.desafio.android.databinding.ListItemUserBinding
-import com.picpay.desafio.android.domain.models.User
+import com.picpay.desafio.android.domain.model.User
 
 class UserListItemViewHolder(
     private val binding: ListItemUserBinding

@@ -1,37 +1,32 @@
 package com.picpay.desafio.android.presenter.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.picpay.desafio.android.domain.models.User
+import com.picpay.desafio.android.di.CoroutinesDispatchers
 import com.picpay.desafio.android.domain.usecases.GetUserUseCase
 import com.picpay.desafio.android.presenter.utils.ViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getUserUseCase: GetUserUseCase
+    private val getUserUseCase: GetUserUseCase,
+    private val dispatchers: CoroutinesDispatchers
 ) : ViewModel() {
 
-    private val _users: MutableLiveData<List<User>> = MutableLiveData()
-    val users: LiveData<List<User>>
-        get() = _users
-
-    private val _viewState = MutableLiveData<ViewState>()
-    val viewState: LiveData<ViewState> = _viewState
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
+    val viewState: StateFlow<ViewState> = _viewState
 
     fun getUsers() {
-        _viewState.postValue(ViewState.LOADING)
-        viewModelScope.launch(Dispatchers.IO) {
+        _viewState.value = ViewState.Loading
+        viewModelScope.launch(dispatchers.io()) {
             getUserUseCase().onSuccess { users ->
-                _users.postValue(users)
-                _viewState.postValue(ViewState.CONTENT)
+                _viewState.value = ViewState.Success(users)
             }.onFailure {
-               _viewState.postValue(ViewState.ERROR)
+               _viewState.value = ViewState.Error
             }
         }
     }

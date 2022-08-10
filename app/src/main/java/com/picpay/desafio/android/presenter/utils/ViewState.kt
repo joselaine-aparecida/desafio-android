@@ -1,5 +1,9 @@
 package com.picpay.desafio.android.presenter.utils
 
-enum class ViewState {
-    LOADING, CONTENT, ERROR
+import com.picpay.desafio.android.domain.model.User
+
+sealed class ViewState{
+    data class Success(val users: List<User>) : ViewState()
+    object Loading : ViewState()
+    object Error : ViewState()
 }

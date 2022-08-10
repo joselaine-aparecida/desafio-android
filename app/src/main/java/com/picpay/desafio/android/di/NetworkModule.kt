@@ -1,7 +1,7 @@
 package com.picpay.desafio.android.di
 
-import com.picpay.desafio.android.BuildConfig
 import com.picpay.desafio.android.data.api.PicPayApi
+import com.picpay.desafio.android.di.qualifier.BaseUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,9 +33,10 @@ object NetworkModule {
     fun provideRetrofit(
         okHttpClient: OkHttpClient,
         converterFactory: GsonConverterFactory,
+        @BaseUrl baseUrl: String
     ): PicPayApi {
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
             .build()

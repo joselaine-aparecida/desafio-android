@@ -1,6 +1,6 @@
 package com.picpay.desafio.android.di
 
-import com.picpay.desafio.android.data.repository.UserRepository
+import com.picpay.desafio.android.domain.repository.UserRepository
 import com.picpay.desafio.android.data.repository.UserRepositoryImpl
 import dagger.Binds
 import dagger.Module
